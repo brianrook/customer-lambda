@@ -5,8 +5,8 @@ provider "aws" {
 
 data "aws_caller_identity" "current" { }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+resource "aws_iam_role" "iam_for_helloWorld_lambda" {
+  name = "iam_for_helloWorld_lambda"
 
   assume_role_policy = <<EOF
 {
@@ -27,7 +27,7 @@ EOF
 resource "aws_lambda_function" "tf-helloWorld" {
   filename      = "../target/springboot-aws-lambda-0.0.1-SNAPSHOT-aws.jar"
   function_name = "helloWorld"
-  role          = aws_iam_role.iam_for_lambda.arn
+  role          = aws_iam_role.iam_for_helloWorld_lambda.arn
   handler       = "org.springframework.cloud.function.adapter.aws.SpringBootApiGatewayRequestHandler::handleRequest"
   memory_size   = 512
   timeout       = 15
@@ -57,7 +57,7 @@ resource "aws_cloudwatch_log_group" "helloWorld-logs" {
 }
 
 resource "aws_iam_policy" "helloWorld-logs" {
-  name        = "lambda_logging"
+  name        = "helloWorld_lambda_logging"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -80,7 +80,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "helloWorld-log-attach" {
-  role       = aws_iam_role.iam_for_lambda.name
+  role       = aws_iam_role.iam_for_helloWorld_lambda.name
   policy_arn = aws_iam_policy.helloWorld-logs.arn
 }
 

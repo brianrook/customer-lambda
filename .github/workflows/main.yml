@@ -26,27 +26,27 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Cache Maven packages
-          uses: actions/cache@v2
-          with:
-            path: ~/.m2
-            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-            restore-keys: ${{ runner.os }}-m2
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-          run: mvn --batch-mode --update-snapshots package
+        run: mvn --batch-mode --update-snapshots package
   upload:
     runs-on: ubuntu-latest
     steps:
       - name: Make artifact directory
-          run: mkdir -p ./artifacts/${{ github.repository }}
+        run: mkdir -p ./artifacts/${{ github.repository }}
 
       - name: Create Zip File
-          uses: montudor/action-zip@v1
-          with:
+        uses: montudor/action-zip@v1
+        with:
           args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./target/helloworld-lambda*-aws.jarf
 
       - name: Push Zip to S3
-          uses: jakejarvis/s3-sync-action@v0.3.1
-          env:
+        uses: jakejarvis/s3-sync-action@v0.3.1
+        env:
           SOURCE_DIR: './artifacts'
           AWS_REGION: 'us-east-1'
           AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}

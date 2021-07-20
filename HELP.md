@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.bullyrooks.customer-lambda' is invalid and this project uses 'com.bullyrooks.customerlambda' instead.
+* The original package name 'com.bullyrooks.customer-lambda' is invalid and this project uses 'com.bullyrooks.helloworld' instead.
 
 # Getting Started
 

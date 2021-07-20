@@ -8,10 +8,10 @@
         <version>2.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.javatechie</groupId>
-    <artifactId>springboot-aws-lambda</artifactId>
+    <groupId>com.bullyrooks</groupId>
+    <artifactId>helloWorld-lambda</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springboot-aws-lambda</name>
+    <name>helloWorld-lambda</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -82,7 +82,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.bullyrooks.customerlambda.CustomerLambdaApplication</mainClass>
+                            <mainClass>com.bullyrooks.helloworld.CustomerLambdaApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

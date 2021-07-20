@@ -1,4 +1,4 @@
-package com.bullyrooks.customerlambda.service.dto;
+package com.bullyrooks.helloworld.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

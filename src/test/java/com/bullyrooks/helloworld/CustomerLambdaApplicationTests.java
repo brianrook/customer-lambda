@@ -1,4 +1,4 @@
-package com.bullyrooks.customerlambda;
+package com.bullyrooks.helloworld;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

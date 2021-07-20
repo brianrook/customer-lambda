@@ -1,7 +1,7 @@
-package com.bullyrooks.customerlambda.service;
+package com.bullyrooks.helloworld.service;
 
-import com.bullyrooks.customerlambda.service.dto.HelloWorldRequest;
-import com.bullyrooks.customerlambda.service.dto.HelloWorldResponse;
+import com.bullyrooks.helloworld.service.dto.HelloWorldRequest;
+import com.bullyrooks.helloworld.service.dto.HelloWorldResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

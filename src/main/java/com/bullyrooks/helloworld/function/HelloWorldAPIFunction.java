@@ -1,9 +1,9 @@
-package com.bullyrooks.customerlambda.function;
+package com.bullyrooks.helloworld.function;
 
 
-import com.bullyrooks.customerlambda.service.HelloWorldService;
-import com.bullyrooks.customerlambda.service.dto.HelloWorldRequest;
-import com.bullyrooks.customerlambda.service.dto.HelloWorldResponse;
+import com.bullyrooks.helloworld.service.HelloWorldService;
+import com.bullyrooks.helloworld.service.dto.HelloWorldRequest;
+import com.bullyrooks.helloworld.service.dto.HelloWorldResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

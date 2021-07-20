@@ -4,4 +4,9 @@ variable "aws_region" {
 variable "app-name" {
   default = "helloWorld"
 }
-
+variable "s3_bucket" {
+  default = null
+}
+variable "s3_key" {
+  default = null
+}

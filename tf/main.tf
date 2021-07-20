@@ -41,7 +41,43 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 }
 
-
+resource "aws_iam_policy" "helloWorld-iam_policy" {
+  name = "lambda_access-policy"
+  description = "IAM Policy"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::${var.s3_bucket}",
+                "arn:aws:s3:::${var.s3_bucket}/*"
+            ]
+        },
+        {
+          "Action": [
+            "autoscaling:Describe*",
+            "cloudwatch:*",
+            "logs:*",
+            "sns:*"
+          ],
+          "Effect": "Allow",
+          "Resource": "*"
+        }
+  ]
+}
+  EOF
+}
 resource "aws_iam_role" "iam_for_helloWorld_lambda" {
   name = "iam_for_helloWorld_lambda"
 
@@ -61,22 +97,23 @@ resource "aws_iam_role" "iam_for_helloWorld_lambda" {
 }
 EOF
 }
+resource "aws_iam_role_policy_attachment" "iam-policy-attach" {
+  role       = "${aws_iam_role.iam_for_helloWorld_lambda.name}"
+  policy_arn = "${aws_iam_policy.helloWorld-iam_policy.arn}"
+}
 resource "aws_lambda_function" "tf-helloWorld" {
-  filename      = "../target/springboot-aws-lambda-0.0.1-SNAPSHOT-aws.jar"
+  s3_bucket     = var.s3_bucket
+  s3_key        = var.s3_key
   function_name = "helloWorld"
   role          = aws_iam_role.iam_for_helloWorld_lambda.arn
   handler       = "org.springframework.cloud.function.adapter.aws.SpringBootApiGatewayRequestHandler::handleRequest"
   memory_size   = 512
   timeout       = 15
 
-  # The filebase64sha256() function is available in Terraform 0.11.12 and later
-  # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-  # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
-  source_code_hash = filebase64sha256("../target/springboot-aws-lambda-0.0.1-SNAPSHOT-aws.jar")
-
   runtime = "java11"
 
   depends_on = [
+    aws_iam_role_policy_attachment.iam-policy-attach,
     aws_iam_role_policy_attachment.helloWorld-log-attach,
     aws_cloudwatch_log_group.helloWorld-logs,
   ]

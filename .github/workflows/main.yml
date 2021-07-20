@@ -33,16 +33,26 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
+      - name: Upload shadded jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar
+          path: target/helloWorld-lambda-0.0.1-SNAPSHOT-aws.jar
   upload:
     runs-on: ubuntu-latest
     steps:
+      - name: Download jar
+        uses: actions/download-artifact@v2
+        with:
+          name: jar
+
       - name: Make artifact directory
         run: mkdir -p ./artifacts/${{ github.repository }}
 
       - name: Create Zip File
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./target/helloWorld-lambda*-aws.jar
+          args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip helloWorld-lambda*-aws.jar
 
       - name: Push Zip to S3
         uses: jakejarvis/s3-sync-action@v0.3.1

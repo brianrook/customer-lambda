@@ -15,32 +15,6 @@ terraform {
 }
 data "aws_caller_identity" "current" { }
 
-resource "aws_s3_bucket" "awstraining_terraform_state" {
-  bucket = "awstraining-terraform-up-and-running-state"
-  # Enable versioning so we can see the full revision history of our
-  # state files
-  versioning {
-    enabled = true
-  }
-  # Enable server-side encryption by default
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "awstraining_terraform-up-and-running-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
-
 resource "aws_iam_policy" "helloWorld-iam_policy" {
   name = "lambda_access-policy"
   description = "IAM Policy"

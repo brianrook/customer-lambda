@@ -42,7 +42,7 @@ jobs:
       - name: Create Zip File
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./target/helloworld-lambda*-aws.jar
+          args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip -i ./target/helloWorld-lambda*-aws.jar
 
       - name: Push Zip to S3
         uses: jakejarvis/s3-sync-action@v0.3.1

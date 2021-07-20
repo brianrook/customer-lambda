@@ -15,6 +15,7 @@ terraform {
 }
 data "aws_caller_identity" "current" { }
 
+#Allow access to the S3 bucket where the lambda code is stored.
 resource "aws_iam_policy" "helloWorld-iam_policy" {
   name = "lambda_access-policy"
   description = "IAM Policy"
@@ -52,6 +53,8 @@ resource "aws_iam_policy" "helloWorld-iam_policy" {
 }
   EOF
 }
+
+#Assume the role needed to create the lambda
 resource "aws_iam_role" "iam_for_helloWorld_lambda" {
   name = "iam_for_helloWorld_lambda"
 
@@ -71,10 +74,15 @@ resource "aws_iam_role" "iam_for_helloWorld_lambda" {
 }
 EOF
 }
+
+#attach the policy (for the S3 bucket access) to the role we're using
 resource "aws_iam_role_policy_attachment" "iam-policy-attach" {
   role       = "${aws_iam_role.iam_for_helloWorld_lambda.name}"
   policy_arn = "${aws_iam_policy.helloWorld-iam_policy.arn}"
 }
+
+#create teh lambda from the code in the s3 bucket.  Make sure that all of the policies are in place before
+#we attempt to create this
 resource "aws_lambda_function" "tf-helloWorld" {
   s3_bucket     = var.s3_bucket
   s3_key        = var.s3_key
@@ -98,12 +106,15 @@ resource "aws_lambda_function" "tf-helloWorld" {
     }
   }
 }
+
+#create a log group for the lambda
 resource "aws_cloudwatch_log_group" "helloWorld-logs" {
   name = "/aws/lambda/${var.app-name}"
 
   retention_in_days = 30
 }
 
+#create a policy to be able to write the logs
 resource "aws_iam_policy" "helloWorld-logs" {
   name        = "helloWorld_lambda_logging"
   path        = "/"
@@ -127,6 +138,7 @@ resource "aws_iam_policy" "helloWorld-logs" {
 EOF
 }
 
+#associate the log policy privileges to the lambda iam
 resource "aws_iam_role_policy_attachment" "helloWorld-log-attach" {
   role       = aws_iam_role.iam_for_helloWorld_lambda.name
   policy_arn = aws_iam_policy.helloWorld-logs.arn

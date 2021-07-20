@@ -1,17 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: helloWorld-lambda-cicd
 
-# Controls when the workflow will run
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the develop branch
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,18 +14,41 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Cache Maven packages
+          uses: actions/cache@v2
+          with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+          run: mvn --batch-mode --update-snapshots package
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make artifact directory
+          run: mkdir -p ./artifacts/${{ github.repository }}
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Create Zip File
+          uses: montudor/action-zip@v1
+          with:
+          args: zip -qq -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./target/helloworld-lambda*-aws.jarf
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Push Zip to S3
+          uses: jakejarvis/s3-sync-action@v0.3.1
+          env:
+          SOURCE_DIR: './artifacts'
+          AWS_REGION: 'us-east-1'
+          AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
